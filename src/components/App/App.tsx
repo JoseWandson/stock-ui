@@ -35,7 +35,7 @@ function App() {
       <Header title="Stock" />
 
       <Container>
-        <Table headers={headers} data={products} />
+        <Table headers={headers} data={products} enableActions onDelete={console.table} onDetail={console.table} onEdit={console.table} />
 
         <ProductForm form={updatingProduct} onSubmit={handleProductSubmit} onUpdate={handleProductUpdate} />
       </Container>
