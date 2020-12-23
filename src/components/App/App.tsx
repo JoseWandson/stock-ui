@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import Container from '../../shared/Container';
 import Table, { TableHeader } from '../../shared/Table';
 import Products, { Product } from '../../shared/Table/Table.mockdata';
@@ -30,12 +31,49 @@ function App() {
     setUpdatingProduct(undefined);
   };
 
+  const handleProductEdit = (product: Product) => {
+    setUpdatingProduct(product);
+  };
+
+  const handleProductDetail = (product: Product) => {
+    Swal.fire(
+      'Product details',
+      `${product.name} cost $${product.price} and we have ${product.stock} available in stock.`,
+      'info'
+    )
+  };
+
+  const handleProductDelete = (product: Product) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#09f',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, delete ${product.name}!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteProduct(product.id);
+        Swal.fire(
+          'Deleted!',
+          'Your file has been deleted.',
+          'success'
+        )
+      }
+    })
+  };
+
+  const deleteProduct = (id: number) => {
+    setProducts(products.filter(product => product.id !== id));
+  };
+
   return (
     <div className="App">
       <Header title="Stock" />
 
       <Container>
-        <Table headers={headers} data={products} enableActions onDelete={console.table} onDetail={console.table} onEdit={console.table} />
+        <Table headers={headers} data={products} enableActions onDelete={handleProductDelete} onDetail={handleProductDetail} onEdit={handleProductEdit} />
 
         <ProductForm form={updatingProduct} onSubmit={handleProductSubmit} onUpdate={handleProductUpdate} />
       </Container>
