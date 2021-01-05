@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { getAllProducts } from '../../services/Products.service';
+import { createSingleProduct, deleteSingleProduct, getAllProducts, updateSingleProduct } from '../../services/Products.service';
 import Container from '../../shared/Container';
 import Table, { TableHeader } from '../../shared/Table';
 import { Product } from '../../shared/Table/Table.mockdata';
@@ -19,27 +19,33 @@ function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [updatingProduct, setUpdatingProduct] = useState<Product | undefined>(products[0]);
 
-  useEffect(() => {
-    async function fetchData() {
-      const _products = await getAllProducts();
-      setProducts(_products);
-    }
+  async function fetchData() {
+    const _products = await getAllProducts();
+    setProducts(_products);
+  }
 
+  useEffect(() => {
     fetchData();
   }, []);
 
-  const handleProductSubmit = (product: ProductCreator) => setProducts([
-    ...products,
-    {
-      id: products.length + 1,
-      ...product
+  const handleProductSubmit = async (product: ProductCreator) => {
+    try {
+      await createSingleProduct(product);
+      fetchData();
+    } catch (err) {
+      Swal.fire('Oops!', err.message, 'error');
     }
-  ]);
+  };
 
-  const handleProductUpdate = (newProduct: Product) => {
-    setProducts(products.map(product => product.id === newProduct.id ? newProduct : product));
+  const handleProductUpdate = async (newProduct: Product) => {
+    try {
+      await updateSingleProduct(newProduct);
 
-    setUpdatingProduct(undefined);
+      setUpdatingProduct(undefined);
+      fetchData();
+    } catch (err) {
+      Swal.fire('Oops!', err.message, 'error');
+    }
   };
 
   const handleProductEdit = (product: Product) => {
@@ -65,18 +71,19 @@ function App() {
       confirmButtonText: `Yes, delete ${product.name}!`
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteProduct(product.id);
-        Swal.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        )
+        deleteProduct(product._id);
       }
     })
   };
 
-  const deleteProduct = (id: number) => {
-    setProducts(products.filter(product => product.id !== id));
+  const deleteProduct = async (id: string) => {
+    try {
+      await deleteSingleProduct(id);
+      fetchData();
+      Swal.fire('Uhul!', 'Product successfully deleted', 'success');
+    } catch (err) {
+      Swal.fire('Oops!', err.message, 'error');
+    }
   };
 
   return (
