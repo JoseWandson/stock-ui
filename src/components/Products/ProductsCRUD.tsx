@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
-import { createSingleProduct, deleteSingleProduct, updateSingleProduct } from '../../services/Products.service';
+import { insertNewProduct } from '../../redux/Products/Products.actions';
+import { deleteSingleProduct, updateSingleProduct } from '../../services/Products.service';
 import Table, { TableHeader } from "../../shared/Table";
 import { Product } from '../../shared/Table/Table.mockdata';
 import ProductForm, { ProductCreator } from './ProductForm';
@@ -18,11 +19,13 @@ declare interface ProductsCRUDProp {
 }
 
 const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
+    const dispatch = useDispatch();
+
     const [updatingProduct, setUpdatingProduct] = useState<Product | undefined>(undefined);
 
     const handleProductSubmit = async (product: ProductCreator) => {
         try {
-            await createSingleProduct(product);
+            dispatch(insertNewProduct(product));
         } catch (err) {
             Swal.fire('Oops!', err.message, 'error');
         }
