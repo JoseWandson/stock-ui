@@ -1,3 +1,4 @@
+import { getAllProducts } from './../../services/Products.service';
 import { ProductCreator } from './../../components/Products/ProductForm';
 import { Action } from './Products.reducer';
 
@@ -6,4 +7,12 @@ export const insertNewProduct = (payload: ProductCreator): Action<ProductCreator
         type: 'INSERT_NEW_PRODUCT',
         payload
     }
-}
+};
+
+export const getProducts = () => async (dispatch: any) => {
+    const products = await getAllProducts();
+    dispatch({
+        type: 'FETCH_PRODUCTS',
+        payload: products
+    })
+};

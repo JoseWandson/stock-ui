@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
-import { insertNewProduct } from '../../redux/Products/Products.actions';
+import { getProducts, insertNewProduct } from '../../redux/Products/Products.actions';
 import { deleteSingleProduct, updateSingleProduct } from '../../services/Products.service';
 import Table, { TableHeader } from "../../shared/Table";
 import { Product } from '../../shared/Table/Table.mockdata';
@@ -23,9 +23,18 @@ const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
 
     const [updatingProduct, setUpdatingProduct] = useState<Product | undefined>(undefined);
 
+    async function fetchData() {
+        dispatch(getProducts());
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, []);
+
     const handleProductSubmit = async (product: ProductCreator) => {
         try {
             dispatch(insertNewProduct(product));
+            fetchData();
         } catch (err) {
             Swal.fire('Oops!', err.message, 'error');
         }
@@ -36,6 +45,7 @@ const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
             await updateSingleProduct(newProduct);
 
             setUpdatingProduct(undefined);
+            fetchData();
         } catch (err) {
             Swal.fire('Oops!', err.message, 'error');
         }
@@ -72,6 +82,7 @@ const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
     const deleteProduct = async (id: string) => {
         try {
             await deleteSingleProduct(id);
+            fetchData();
             Swal.fire('Uhul!', 'Product successfully deleted', 'success');
         } catch (err) {
             Swal.fire('Oops!', err.message, 'error');
