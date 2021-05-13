@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import organizeData from '../../utils/organizeDataForTable';
 import Button from '../Button';
 import './Table.scss';
@@ -22,8 +23,9 @@ declare interface TableProps {
 
 const Table: React.FC<TableProps> = (props) => {
     const [organizedData, indexedHeaders] = organizeData(props.data, props.headers);
+    const page = 2;
 
-    return (
+    return <>
         <table className="AppTable">
             <thead>
                 <tr>
@@ -69,7 +71,16 @@ const Table: React.FC<TableProps> = (props) => {
                 }
             </tbody>
         </table>
-    );
+        <div className="Table__pagination">
+            {
+                Array(5).fill('').map((_, i) =>
+                    <NavLink activeClassName="selected" to={`/products?page=${i + 1}`} isActive={() => page === i + 1}>
+                        {i + 1}
+                    </NavLink>
+                )
+            }
+        </div>
+    </>
 };
 
 export default Table;

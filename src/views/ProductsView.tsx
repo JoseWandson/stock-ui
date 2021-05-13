@@ -1,9 +1,8 @@
-import React from 'react';
 import Header from '../components/Header';
 import ProductsCRUD from '../components/Products/ProductsCRUD';
 import Container from '../shared/Container';
 
-const HomeView = () => {
+const ProductsView = () => {
     return <>
         <Header title="Stock" />
 
@@ -13,4 +12,4 @@ const HomeView = () => {
     </>
 };
 
-export default HomeView;
+export default ProductsView;
