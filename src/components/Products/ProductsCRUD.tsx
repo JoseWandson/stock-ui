@@ -72,7 +72,8 @@ const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
 
     };
     return <>
-        <Table headers={headers} data={props.products} enableActions onDelete={handleProductDelete} onDetail={handleProductDetail} onEdit={setUpdatingProduct} />
+        <Table headers={headers} data={props.products} enableActions onDelete={handleProductDelete} onDetail={handleProductDetail} onEdit={setUpdatingProduct}
+            itemsPerPage={3} />
 
         <ProductForm form={updatingProduct} onSubmit={handleProductSubmit} onUpdate={handleProductUpdate} />
     </>

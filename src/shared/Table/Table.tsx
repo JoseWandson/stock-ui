@@ -1,6 +1,8 @@
+import { parse } from 'query-string';
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import organizeData from '../../utils/organizeDataForTable';
+import paginate from '../../utils/paginate';
 import Button from '../Button';
 import './Table.scss';
 
@@ -16,14 +18,20 @@ declare interface TableProps {
 
     enableActions?: boolean;
 
+    itemsPerPage?: number;
+
     onDelete?: (item: any) => void;
     onDetail?: (item: any) => void;
     onEdit?: (item: any) => void;
 }
 
 const Table: React.FC<TableProps> = (props) => {
+    const itemsPerPage = props.itemsPerPage || 5;
+    const location = useLocation();
+    const page = parseInt(parse(location.search).page as string) || 1;
     const [organizedData, indexedHeaders] = organizeData(props.data, props.headers);
-    const page = 2;
+    const paginatedData = paginate(organizedData, itemsPerPage, page);
+    const totalPages = Math.ceil(organizedData.length / itemsPerPage);
 
     return <>
         <table className="AppTable">
@@ -40,7 +48,7 @@ const Table: React.FC<TableProps> = (props) => {
             </thead>
             <tbody>
                 {
-                    organizedData.map((row, i) =>
+                    paginatedData.map((row, i) =>
                         <tr key={i}>
                             {
                                 Object.keys(row).map((item, i) =>
@@ -73,8 +81,8 @@ const Table: React.FC<TableProps> = (props) => {
         </table>
         <div className="Table__pagination">
             {
-                Array(5).fill('').map((_, i) =>
-                    <NavLink activeClassName="selected" to={`/products?page=${i + 1}`} isActive={() => page === i + 1}>
+                Array(totalPages).fill('').map((_, i) =>
+                    <NavLink key={i} activeClassName="selected" to={`/products?page=${i + 1}`} isActive={() => page === i + 1}>
                         {i + 1}
                     </NavLink>
                 )
