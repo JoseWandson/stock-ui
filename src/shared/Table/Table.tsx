@@ -82,7 +82,7 @@ const Table: React.FC<TableProps> = (props) => {
         <div className="Table__pagination">
             {
                 Array(totalPages).fill('').map((_, i) =>
-                    <NavLink key={i} activeClassName="selected" to={`/products?page=${i + 1}`} isActive={() => page === i + 1}>
+                    <NavLink key={i} activeClassName="selected" to={{ pathname: location.pathname, search: `?page=${i + 1}` }} isActive={() => page === i + 1}>
                         {i + 1}
                     </NavLink>
                 )

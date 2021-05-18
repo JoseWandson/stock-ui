@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { RootState, ThunkDispatch } from '../../redux';
 import * as ProductsAction from '../../redux/Products/Products.actions';
@@ -20,10 +21,15 @@ declare interface ProductsCRUDProp {
 
 const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
     const dispatch: ThunkDispatch = useDispatch();
-
+    const params = useParams<{ id?: string }>();
+    const history = useHistory();
+    const location = useLocation();
     const showErrorAlert = (err: Error) => Swal.fire('Oops!', err.message, 'error');
-
     const [updatingProduct, setUpdatingProduct] = useState<Product | undefined>(undefined);
+
+    useEffect(() => {
+        setUpdatingProduct(params.id ? props.products.find(product => product._id === params.id) : undefined)
+    }, [params, props.products]);
 
     useEffect(() => {
         fetchData()
@@ -71,9 +77,10 @@ const ProductsCRUD: React.FC<ProductsCRUDProp> = (props) => {
             .catch(showErrorAlert);
 
     };
+
     return <>
-        <Table headers={headers} data={props.products} enableActions onDelete={handleProductDelete} onDetail={handleProductDetail} onEdit={setUpdatingProduct}
-            itemsPerPage={3} />
+        <Table headers={headers} data={props.products} enableActions onDelete={handleProductDelete} onDetail={handleProductDetail}
+            onEdit={product => history.push({ pathname: `/products/${product._id}`, search: location.search })} itemsPerPage={3} />
 
         <ProductForm form={updatingProduct} onSubmit={handleProductSubmit} onUpdate={handleProductUpdate} />
     </>

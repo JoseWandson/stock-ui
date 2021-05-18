@@ -10,7 +10,6 @@ export const insertNewProduct = (product: ProductCreator): Thunk => async (dispa
 
 export const getProducts = (): Thunk<Product[]> => async (dispatch) => {
     const products = await getAllProducts();
-    console.log('fetched');
     dispatch({
         type: 'FETCH_PRODUCTS',
         payload: products
